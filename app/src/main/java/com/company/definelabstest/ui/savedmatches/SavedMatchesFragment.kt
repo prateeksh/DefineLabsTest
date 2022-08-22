@@ -23,6 +23,7 @@ import com.company.definelabstest.ui.allmatches.viewmodel.HomeViewModelFactory
 import com.company.definelabstest.ui.savedmatches.viewmodel.SavedMatchesViewModel
 import com.company.definelabstest.ui.savedmatches.viewmodel.SavedViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ class SavedMatchesFragment : Fragment() {
             recyclerView.layoutManager = LinearLayoutManager(requireContext(),RecyclerView.VERTICAL,false)
 
             adapter.onItemClick = { venues ->
-                GlobalScope.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     val database = MatchesDatabase.getDatabase(requireContext())
                     venues.id?.let { it1 -> database.userDao().deleteMatches(it1) }
                 }

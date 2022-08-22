@@ -17,6 +17,7 @@ import com.company.definelabstest.ui.MainApplication
 import com.company.definelabstest.ui.allmatches.viewmodel.HomeViewModel
 import com.company.definelabstest.ui.allmatches.viewmodel.HomeViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -63,18 +64,24 @@ class HomeFragment : Fragment() {
             recyclerView.layoutManager = LinearLayoutManager(requireContext(),RecyclerView.VERTICAL,false)
 
             adapter.onItemClick = { venues ->
-                GlobalScope.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch{
                     val database = MatchesDatabase.getDatabase(requireContext())
                     venues.verified = true
                     val count: Int = database.userDao().count(venues.id)
+
                     if ( count == 1) {
 
-                        val snack = Snackbar.make(view,venues.name + " already in db", Snackbar.LENGTH_SHORT)
+                        //to delete from database
+                        venues.id?.let { it1 -> database.userDao().deleteMatches(it1) }
+                        val snack = Snackbar.make(view,venues.name + " deleted from db", Snackbar.LENGTH_SHORT)
                         snack.show()
+
                     } else {
+
                         database.userDao().insertVenues(venues)
                         val snack = Snackbar.make(view,venues.name + " inserted in db", Snackbar.LENGTH_SHORT)
                         snack.show()
+
                     }
                 }
 
